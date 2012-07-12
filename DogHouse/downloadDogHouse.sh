@@ -1,12 +1,12 @@
 #~/bin/bash
 
-filename="ubuntu-12.04-r1-minimal-armhf.tar.xz"
+filename="ubuntu-12.04-preinstalled-desktop-armhf+omap.img.gz"
 
 echo "Downloading files ..."
-wget http://rcn-ee.net/deb/rootfs/precise/$filename
+wget http://cdimage.ubuntu.com/releases/12.04/release/$filename
 echo "Files downloaded"
 
-correctHash='28a2e3969f3d6dd434d2481fd443e634' 
+correctHash='3d14124427a8b7c23c193b30152b0d92' 
 fileHash=$(md5sum $filename | awk '{print $1}')
 
 if [ $correctHash != $fileHash ]; then
@@ -22,5 +22,3 @@ echo "Copying next install script"
 cp installDogHouse.sh ./${filename%.tar.xz}
 echo "Removing temporary files"
 rm $filename
-
-

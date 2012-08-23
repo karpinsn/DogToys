@@ -55,7 +55,7 @@ def generateTimingSignal():
 def main():
     setup()
 
-    while(true):
+    while(1):
         generateTimingSignal()
 
     cleanup()

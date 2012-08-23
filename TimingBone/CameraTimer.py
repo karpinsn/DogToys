@@ -1,6 +1,8 @@
 from time import sleep
 
 def setup():
+    
+    print "Initializing GPIO on pins 49 and 117"
     # Setup pins 23 and 25 on Expansion header B for GPIO (49 & 117)
     fileHandle = file("/sys/class/gpio/export", "w")
     fileHandle.write("%d" % (49)) 
@@ -10,11 +12,13 @@ def setup():
     fileHandle.write("%d" % (117))
     fileHandle.close()
 
+    print "Setting up pin 49 as camera trigger output"
     # Setup pin 23 as the camera output
     fileHandle = file("/sys/class/gpio/gpio49/direction", "w")
     fileHandle.write("out")
     fileHandle.close()
 
+    print "Setting pin 117 as VSYNC timing input"
     # Setup pin 25 as the timing input (VSYNC in) using interrupts
     fileHandle = file("/sys/class/gpio/gpio117/direction", "w")
     fileHandle.write("in")
@@ -62,11 +66,14 @@ def main():
     # In case we are interrupted during processing make sure we
     # cleanup the GPIO pins we were using
     try:
+        print "Listening for timing signals"
         while(1):
             generateTimingSignal()
     except (KeyboardInterrupt, SystemExit):
+        print "Closing down"
         raise
     finally:
+        print "Cleaning up before closing"
         cleanup()
 
 if __name__ == '__main__':

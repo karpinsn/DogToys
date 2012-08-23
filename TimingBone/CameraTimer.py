@@ -19,7 +19,7 @@ def setup():
     fileHandle = file("/sys/class/gpio/gpio117/direction", "w")
     fileHandle.write("in")
     fileHandle.close()
-    fileHandle = file("/sys/class/gpio/gpio117/event", "w")
+    fileHandle = file("/sys/class/gpio/gpio117/edge", "w")
     fileHandle.write("rising")
     fileHandle.close()
 

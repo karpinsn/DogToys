@@ -55,10 +55,15 @@ def generateTimingSignal():
 def main():
     setup()
 
-    while(1):
-        generateTimingSignal()
-
-    cleanup()
+    # In case we are interrupted during processing make sure we
+    # cleanup the GPIO pins we were using
+    try:
+        while(1):
+            generateTimingSignal()
+    except (KeyboardInterrupt, SystemExit):
+        raise
+    finally:
+        cleanup()
 
 if __name__ == '__main__':
     main()

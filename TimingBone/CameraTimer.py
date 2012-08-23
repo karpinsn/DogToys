@@ -3,7 +3,10 @@ from time import sleep
 def setup():
     # Setup pins 23 and 25 on Expansion header B for GPIO (49 & 117)
     fileHandle = file("/sys/class/gpio/export", "w")
-    fileHandle.write("%d" % (49))
+    fileHandle.write("%d" % (49)) 
+    fileHandle.close()
+ 
+    fileHandle = file("/sys/class/gpio/export", "w")
     fileHandle.write("%d" % (117))
     fileHandle.close()
 

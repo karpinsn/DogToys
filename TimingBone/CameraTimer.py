@@ -1,8 +1,7 @@
 from time import sleep
 from bbio import *
  
-def setup():
-    
+def setup():    
     print "Initializing GPIO1_17 as camera trigger output"
     pinMode(GPIO1_17, OUTPUT)
 
@@ -26,7 +25,7 @@ def generateTimingSignal():
     digitalWrite(GPIO1_17, LOW)
 
 def loop():
-    generateTimingSignal():
+    generateTimingSignal()
 
 if __name__ == '__main__':
     run(setup, loop)

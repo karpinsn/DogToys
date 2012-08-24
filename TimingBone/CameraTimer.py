@@ -8,12 +8,6 @@ def setup():
     print "Initializing GPIO3_21 as VSYNC timing input"
     pinMode(GPIO3_21, INPUT)
  
-def generateTimingSignal():
-    # Blocking read on pin 25. Will return once we have a rising edge 
-    #fileHandle = file("/sys/class/gpio/gpio117/value", "r")
-    #fileHandle.close()
-    
-
 def loop():
     if(HIGH == digitalRead(GPIO3_21):
         digitalWrite(GPIO1_17, HIGH)

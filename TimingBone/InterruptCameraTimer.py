@@ -2,7 +2,7 @@ from time import sleep
 from poll import *
 from bbio import *
  
-def configInterrupt(pin)
+def configInterrupt(pin):
     fileHandle = file("/sys/class/gpio/export", "w")
     fileHandle.write("%d" % pin)
     fileHandle.close()

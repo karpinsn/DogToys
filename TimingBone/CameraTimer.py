@@ -9,7 +9,7 @@ def setup():
     pinMode(GPIO3_21, INPUT)
  
 def loop():
-    if(HIGH == digitalRead(GPIO3_21):
+    if(HIGH == digitalRead(GPIO3_21)):
         digitalWrite(GPIO1_17, HIGH)
         digitalWrite(GPIO1_17, LOW)
 

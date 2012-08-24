@@ -12,20 +12,21 @@ def generateTimingSignal():
     # Blocking read on pin 25. Will return once we have a rising edge 
     #fileHandle = file("/sys/class/gpio/gpio117/value", "r")
     #fileHandle.close()
-
-    digitalWrite(GPIO1_17, HIGH)
-    digitalWrite(GPIO1_17, LOW)
-
-    sleep(.01)
-    digitalWrite(GPIO1_17, HIGH)
-    digitalWrite(GPIO1_17, LOW)
-
-    sleep(.01)
-    digitalWrite(GPIO1_17, HIGH)
-    digitalWrite(GPIO1_17, LOW)
+    
 
 def loop():
-    generateTimingSignal()
+    if(HIGH == digitalRead(GPIO3_21):
+        digitalWrite(GPIO1_17, HIGH)
+        digitalWrite(GPIO1_17, LOW)
+
+        sleep(.01)
+        digitalWrite(GPIO1_17, HIGH)
+        digitalWrite(GPIO1_17, LOW)
+
+        sleep(.01)
+        digitalWrite(GPIO1_17, HIGH)
+        digitalWrite(GPIO1_17, LOW)
+    sleep(.01) 
 
 if __name__ == '__main__':
     run(setup, loop)

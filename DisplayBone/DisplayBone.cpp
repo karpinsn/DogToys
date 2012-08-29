@@ -164,3 +164,4 @@ bool FringeDisplay::QuitApplication()
 	// Not much to do...
 	return true;
 }
+

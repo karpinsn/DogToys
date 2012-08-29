@@ -1,3 +1,6 @@
+#ifndef _FRINGE_DISPLAY_H_
+#define _FRINGE_DISPLAY_H_
+
 #include <stdio.h>
 #include <stddef.h>
 
@@ -10,6 +13,8 @@
 
 // Needed for OpenGLES 2.0 stuff
 #include "PVRShell.h"
+
+using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////
 //	Class: FringeDisplay
@@ -25,7 +30,7 @@ class FringeDisplay : public PVRShell
 		GLuint m_fringeVBO;
 
 		// Shader used to display the texture
-		GLuint m_fringeShader;
+		unique_ptr<ShaderProgram> m_fringeShader;
 
 		// Locations of the data in the shader program
 		GLint m_vertLoc;
@@ -41,3 +46,5 @@ class FringeDisplay : public PVRShell
     private:
         bool _checkGLErrors();
 };
+
+#endif // _FRINGE_DISPLAY_H_

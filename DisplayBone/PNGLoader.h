@@ -1,3 +1,6 @@
+#ifndef _PNG_LOADER_H_
+#define _PNG_LOADER_H_
+
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <png.h>
@@ -25,3 +28,4 @@ class PNGLoader
 		static GLuint loadTexture(const string filename, int &width, int &height);
 };
 
+#endif // _PNG_LOADER_H_

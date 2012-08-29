@@ -47,22 +47,25 @@ bool FringeDisplay::InitView()
 	/////////////////////////////////////////////////
 	// Need to load our shaders
 	/////////////////////////////////////////////////
-	
-	//TODO - Need to load the shaders
+    m_fringeShader = unique_ptr<ShaderProgram>(new ShaderProgram());
+    m_fringeShader->init();
+    m_fringeShader->attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/TextureDisplay.vert"));
+    m_fringeShader->attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/TextureDisplay.frag"));
+    m_fringeShader->bindAttributeLocation("vert", 0);
+    m_fringeShader->bindAttributeLocation("vertTexCoord", 1);
+    m_fringeShader->link();
+    m_fringeShader->uniform("texture", 0);
 
 	/////////////////////////////////////////////////
 	// Cache our fullscreen quad
 	/////////////////////////////////////////////////
-	// Grab the locations of our attributes in the shaders
-	GLint m_vertLoc = glGetAttribLocation(m_fringeShader, "vert");
-	GLint m_texLoc  = glGetAttribLocation(m_fringeShader, "texCoord");
-
 	// Cache the geometry (held in fullscreenQuad)
 	glGenBuffer(1, &m_fringeVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, m_fringeVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(fullscreenQuad), &fullscreenQuad[0], GL_STATIC_DRAW);
-	glVertexAttribPointer(m_vertLoc, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), offsetof(Vertex, position);
-	glVertexAttribPointer(m_texLoc, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), offsetof(Vertex, tex);
+	// Locations (first argument) set above when creating the shader
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), offsetof(Vertex, position);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), offsetof(Vertex, tex);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     //  If we have OpenGL errors stop and notify of problems
@@ -92,8 +95,7 @@ bool FringeDisplay::ReleaseView()
 	/////////////////////////////////////////////////
 	glDeleteBuffers(1, &m_fringeVBO);
 	glDeleteTextures(1, m_fringeTexture);
-
-	//TODO - Delete the shader
+    m_fringeShader.release();
 
 	return !_checkGLErrors();
 }

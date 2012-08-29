@@ -1,36 +1,4 @@
-#include <stdio.h>
-#include <stddef.h>
-
-// Needed for OpenGLES 2.0 stuff
-#include "PVRShell.h"
-
-///////////////////////////////////////////////////////////////////////////
-//	Class: FringeDisplay
-//
-//	Summary: Class that displays the fringe at full screen. Needs to 
-//	         inherit from PVR since that provides our rendering context
-//////////////////////////////////////////////////////////////////////////
-class FringeDisplay : public PVRShell
-{
-	private:
-		// Texture and VBO used to display the fringe
-		GLuint m_fringeTexture;
-		GLuint m_fringeVBO;
-
-		// Shader used to display the texture
-		GLuint m_fringeShader;
-
-		// Locations of the data in the shader program
-		GLint m_vertLoc;
-		GLint m_texLoc;
-	public:
-		// PVRShell Functions
-		virtual bool InitApplication();
-		virtual bool InitView();
-		virtual bool ReleaseView();
-		virtual bool QuitApplication();
-		virtual bool RenderScene();
-};
+#include "FringeDisplay.h"
 
 // Struct representing the data we are sending to the GPU
 typedef struct
@@ -64,7 +32,7 @@ static Vertex fullscreenQuad[] =
 bool FringeDisplay::InitApplication()
 {
 	// Not much to do ...
-	return true;
+	return !_checkGLErrors();
 }
 
 // Called when there is a change to the rendering context
@@ -97,18 +65,22 @@ bool FringeDisplay::InitView()
 	glVertexAttribPointer(m_texLoc, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), offsetof(Vertex, tex);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+    //  If we have OpenGL errors stop and notify of problems
+    if(_checkGLErrors())
+        return false;
+
 	/////////////////////////////////////////////////
 	// Load the fringe image
 	/////////////////////////////////////////////////
-	glGenTextures(1, m_fringeTexture);
-	glBindTexture(GL_TEXTURE_2D, m_fringeTexture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	
-	// TODO - Need to load the image
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+    int width;
+    int height;
+	m_fringeTexture = PNGLoader.loadTexture("fringe.png", width, height);
+    //  Make sure we didn't have any errors loading the fringe
+    if(TEXTURE_LOAD_ERROR == m_fringeTexture) 
+        return false;
 
-	return true;
+    //  If we dont have any errors then we have sucessfully initialized
+	return !_checkGLErrors();
 }
 
 // Called when there is a change in the rendering context 
@@ -123,7 +95,7 @@ bool FringeDisplay::ReleaseView()
 
 	//TODO - Delete the shader
 
-	return true;
+	return !_checkGLErrors();
 }
 
 bool FringeDisplay::RenderScene()
@@ -154,14 +126,26 @@ bool FringeDisplay::RenderScene()
 	glDisableVertexAttribArray(m_texLoc);
 	glUseProgram(0);	
 
+    // Make sure we dont have errors.
 	// By returning true, we signify to PVR that all
-	// went well and that it can flip our buffers
-	return true;
+	// went well and that it can flip our buffers.
+	return !_checkGLErrors();
 }
 
 bool FringeDisplay::QuitApplication()
 {
 	// Not much to do...
-	return true;
+	return !_checkGLErrors();
 }
 
+bool FringeDisplay::_checkGLErrors()
+{
+    GLenum glError = glGetError();
+    if(GL_NO_ERROR != glError)
+    {
+        printf("OpenGL Error: %s\n", gluErrorString(glError));
+        return true;
+    }
+
+    return false;
+}

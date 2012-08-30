@@ -3,16 +3,20 @@
 
 #include <stdio.h>
 #include <stddef.h>
+#include <memory>
 
 // OpenGL Includes
-#include <GL/gl.h>
-#include <GL/glu.h>
+//#include <GL/gl.h>
+//#include <GL/glu.h>
 
 // Helper classes
 #include "PNGLoader.h"
+#include "ShaderProgram.h"
+#include "Shader.h"
 
 // Needed for OpenGLES 2.0 stuff
 #include "PVRShell.h"
+#include "OGLES2Tools.h" 
 
 using namespace std;
 
@@ -30,7 +34,7 @@ class FringeDisplay : public PVRShell
 		GLuint m_fringeVBO;
 
 		// Shader used to display the texture
-		unique_ptr<ShaderProgram> m_fringeShader;
+		ShaderProgram m_fringeShader;
 
 		// Locations of the data in the shader program
 		GLint m_vertLoc;

@@ -12,8 +12,11 @@ Revision Log:
 #ifndef _SHADER_PROGRAM_H_
 #define _SHADER_PROGRAM_H_
 
-#include <GL/glew.h>
-#include <GL/gl.h>
+//#include <GL/glu.h>
+//#include <GL/gl.h>
+
+#include "PVRShell.h"
+#include "OGLES2Tools.h" 
 
 #include <string.h>
 #include <iostream>
@@ -45,10 +48,6 @@ class ShaderProgram
         void uniform(const string name, const int data);
         void uniform(const string name, const float data);
         void uniform(const string name, const float* data, int count);
-        void uniform(const string name, const glm::vec3 data);
-        void uniform(const string name, const glm::vec4 data);
-        void uniform(const string name, const glm::mat3 data);
-        void uniform(const string name, const glm::mat4 data);
         void uniformMat4(const string name, GLboolean transpose, const GLfloat *value);
         void bindAttributeLocation(const string name, const GLuint index);
 

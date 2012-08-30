@@ -1,6 +1,6 @@
 #include "PNGLoader.h"
 
-static GLuint PNGLoader::loadTexture(const string filename, int &width, int &height) 
+GLuint PNGLoader::loadTexture(const string filename, int &width, int &height) 
 {
     //header for testing if it is a png
     png_byte header[8];

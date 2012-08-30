@@ -12,8 +12,11 @@ Revision Log:
 #ifndef _SHADER_H_
 #define _SHADER_H_
 
-#include <GL/gl.h>
-#include <GL/glu.h>
+//#include <GL/gl.h>
+//#include <GL/glu.h>
+
+#include "PVRShell.h"
+#include "OGLES2Tools.h" 
 
 #include <string.h>
 #include <iostream>

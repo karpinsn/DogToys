@@ -25,7 +25,7 @@ bool Shader::init(GLenum shaderType, const string &filename)
 
     if (shaderSource == nullptr)
     {
-        printf("Shader source file not found: %s\n", filename);
+        printf("Shader source file not found: %s\n", filename.c_str());
     }
     else
     {
@@ -97,8 +97,8 @@ bool Shader::_validateShader(GLuint shader, const string &filename = "")
 
     if (!validShader)
     {
-        printf("Error compiling shader: %s\n", filename);
-        printf(string(buffer));
+        printf("Error compiling shader: %s\n", filename.c_str());
+        //printf(string(buffer));
     }
 
     return validShader;

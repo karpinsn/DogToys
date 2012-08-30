@@ -1,8 +1,11 @@
 #ifndef _PNG_LOADER_H_
 #define _PNG_LOADER_H_
 
-#include <GL/gl.h>
-#include <GL/glu.h>
+#include "PVRShell.h"
+#include "OGLES2Tools.h" 
+
+//#include <GL/gl.h>
+//#include <GL/glu.h>
 #include <png.h>
 #include <cstdio>
 #include <string>

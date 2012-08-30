@@ -64,34 +64,6 @@ void ShaderProgram::uniform(const string name, const float* data, int count)
     glUniform1fv(location, count, data);
 }
 
-void ShaderProgram::uniform(const string name, const glm::vec3 data)
-{
-    bind();
-    GLuint location = glGetUniformLocation(m_shaderID, name.c_str());
-    glUniform3fv(location, 1, glm::value_ptr(data));
-}
-
-void ShaderProgram::uniform(const string name, const glm::vec4 data)
-{
-    bind();
-    GLuint location = glGetUniformLocation(m_shaderID, name.c_str());
-    glUniform4fv(location, 1, glm::value_ptr(data));
-}
-
-void ShaderProgram::uniform(const string name, const glm::mat3 data)
-{
-    bind();
-    GLuint location = glGetUniformLocation(m_shaderID, name.c_str());
-    glUniformMatrix3fv(location, 1, false, glm::value_ptr(data));
-}
-
-void ShaderProgram::uniform(const string name, const glm::mat4 data)
-{
-    bind();
-    GLuint location = glGetUniformLocation(m_shaderID, name.c_str());
-    glUniformMatrix4fv(location, 1, false, glm::value_ptr(data));
-}
-
 void ShaderProgram::bindAttributeLocation(const string name, GLuint index)
 {
     glBindAttribLocation(m_shaderID, index, name.c_str());

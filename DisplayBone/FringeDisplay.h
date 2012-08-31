@@ -1,9 +1,9 @@
 #ifndef _FRINGE_DISPLAY_H_
 #define _FRINGE_DISPLAY_H_
 
-#include <stdio.h>
-#include <stddef.h>
+#include <cstddef>
 #include <memory>
+#include <cstdio>
 
 // OpenGL Includes
 //#include <GL/gl.h>

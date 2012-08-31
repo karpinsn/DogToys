@@ -1,23 +1,38 @@
 #
 # File			Makefile
-# Title			Demo makefile
+# Title			FringeDisplay Makefile for beaglebone DisplayBone
+# Author		Nik Karpinsky
 #
-# Copyright		Copyright Imagination Technologies Limited.
+# Copyright		Nik Karpinsky
 #
 
-INCLUDE = -I/home/karpinsn/Workspace/ARM-Libs/usr/include -I/home/karpinsn/Graphics_SDK_4_06_00_03/include/OGLES2/ -I/home/karpinsn/Graphics_SDK_4_06_00_03/GFX_Linux_SDK/OGLES2/SDKPackage/Tools/OGLES2/ -I/home/karpinsn/Graphics_SDK_4_06_00_03/GFX_Linux_SDK/OGLES2/SDKPackage/Shell
-LIBDIR = -L/home/karpinsn/Workspace/ARM-Libs/usr/lib -L/home/karpinsn/Graphics_SDK_4_06_00_03/gfx_rel_es3.x 
+###################################################
+# These need to be changed for your specific system
+###################################################
+# This should be the location of your cross compiling toolchain usr directory
+TOOLCHAINDIR=/usr/local/angstrom/arm/arm-angstrom-linux-gnueabi
+# This should be set to the SDK directory containing the correct includes (.h)
+SGXINCDIR = /home/karpinsn/Workspace/Graphics_SDK_4_06_00_02/include/OGLES2
+# This should be set to the SDK directory containing the correct libs (.so)
+#SGXLIBDIR = /home/karpinsn/Workspace/Graphics_SDK_4_06_00_02/gfx_rel_es3.x
+SGXLIBDIR = /home/karpinsn/Workspace/Graphics_SDK_4_06_00_02/GFX_Linux_SDK/OGLES2/SDKPackage/Builds/OGLES2/LinuxARMV7/Lib
+# This should be set to the SDK directory containing the tools and PVR stuff
+SGXSDKDIR = /home/karpinsn/Workspace/Graphics_SDK_4_06_00_02/GFX_Linux_SDK/OGLES2/SDKPackage
 
-CC=arm-linux-gnueabi-g++  
-CFLAGS=-std=gnu++0x $(INCLUDE)
-LIBS = -lpng -lEGL -lGLESv2
+####################
+# Includes and Libs to use
+####################
+INCLUDE = -I$(TOOLCHAINUSRDIR)/usr/include -I$(SGXINCDIR) -I$(SGXSDKDIR)/Tools -I$(SGXSDKDIR)/Tools/OGLES2 -I$(SGXSDKDIR)/Shell
+LIBDIR = -L$(TOOLCHAINUSRDIR)/usr/lib -L$(SGXLIBDIR) 
 
-# This should be set to the top most SDK directory
-#SDKDIR  = ../../../../..
-SDKDIR = /home/karpinsn/Graphics_SDK_4_06_00_03/GFX_Linux_SDK/OGLES2/SDKPackage
+# The compiler that we should use (should be the cross compiler)
+#CC=$(TOOLCHAINDIR)/bin/gcc
+CC=/usr/local/angstrom/arm/bin/arm-angstrom-linux-gnueabi-g++
+CFLAGS=$(INCLUDE) -I/usr/include/i386-linux-gnu/
+LIBS = -lpng -lEGL -lGLESv2 
+
+# What you want the final executable to be called
 OUTNAME = FringeDisplay
-
-#include $(SDKDIR)/Builds/OGLES2/LinuxGeneric/make_demo.mak
 
 all: FringeDisplay.o ShaderProgram.o Shader.o PNGLoader.o
 	$(CC) FringeDisplay.o ShaderProgram.o Shader.o PNGLoader.o -o $(OUTNAME) $(LIBDIR) $(LIBS)

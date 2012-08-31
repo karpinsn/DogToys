@@ -23,7 +23,7 @@ bool Shader::init(GLenum shaderType, const string &filename)
 
     const GLchar* shaderSource = _loadShaderSource(filename);
 
-    if (shaderSource == nullptr)
+    if (shaderSource == NULL)
     {
         printf("Shader source file not found: %s\n", filename.c_str());
     }
@@ -39,7 +39,7 @@ bool Shader::init(GLenum shaderType, const string &filename)
 
     }
 
-    if(nullptr != shaderSource)
+    if(NULL != shaderSource)
     {
         delete[] shaderSource;
     }

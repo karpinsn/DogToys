@@ -16,13 +16,13 @@ Revision Log:
 //#include <GL/gl.h>
 
 #include "PVRShell.h"
-#include "OGLES2Tools.h" 
+#include "OGLES2/OGLES2Tools.h" 
 
-#include <string.h>
+#include <cstring>
 #include <iostream>
 #include <fstream>
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include <vector>
 
 #include "Shader.h"

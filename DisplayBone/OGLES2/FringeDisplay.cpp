@@ -1,4 +1,50 @@
-#include "FringeDisplay.h"
+#include <cstddef>
+#include <memory>
+#include <cstdio>
+
+// Helper classes
+#include "PNGLoader.h"
+#include "ShaderProgram.h"
+#include "Shader.h"
+
+// Needed for OpenGLES 2.0 stuff
+#include "PVRShell.h"
+#include "OGLES2Tools.h" 
+
+using namespace std;
+
+///////////////////////////////////////////////////////////////////////////
+//	Class: FringeDisplay
+//
+//	Summary: Class that displays the fringe at full screen. Needs to 
+//	         inherit from PVR since that provides our rendering context
+//////////////////////////////////////////////////////////////////////////
+class FringeDisplay : public PVRShell
+{
+	private:
+		// Texture and VBO used to display the fringe
+		GLuint m_fringeTexture;
+		GLuint m_fringeVBO;
+
+		// Shader used to display the texture
+        GLuint m_textureVertShader;
+        GLuint m_textureFragShader;
+        GLuint m_textureShader;
+        
+		// Locations of the data in the shader program
+		GLint m_vertLoc;
+		GLint m_texLoc;
+	public:
+		// PVRShell Functions
+		virtual bool InitApplication();
+		virtual bool InitView();
+		virtual bool ReleaseView();
+		virtual bool QuitApplication();
+		virtual bool RenderScene();
+
+    private:
+        bool _checkGLErrors();
+};
 
 // Struct representing the data we are sending to the GPU
 typedef struct
@@ -9,6 +55,12 @@ typedef struct
 
 // Actual data we are sending to the GPU
 static Vertex fullscreenQuad[4]; 
+
+// Source and binary shaders                                                    
+const char c_szFragShaderSrcFile[]  = "TextureDisplay.fsh";                         
+const char c_szFragShaderBinFile[]  = "TextureDisplay.fsc";                         
+const char c_szVertShaderSrcFile[]  = "TextureDisplay.vsh";                         
+const char c_szVertShaderBinFile[]  = "TextureDisplay.vsc";
 
 // Called once per application run
 bool FringeDisplay::InitApplication()
@@ -38,14 +90,27 @@ bool FringeDisplay::InitView()
 	/////////////////////////////////////////////////
 	// Need to load our shaders
 	///////////////////////////////////////////////// 
-    m_fringeShader.init();
-    m_fringeShader.attachShader(new Shader(GL_VERTEX_SHADER, "Shaders/TextureDisplay.vert"));
-    m_fringeShader.attachShader(new Shader(GL_FRAGMENT_SHADER, "Shaders/TextureDisplay.frag"));
-    m_fringeShader.bindAttributeLocation("vert", 0);
-    m_fringeShader.bindAttributeLocation("vertTexCoord", 1);
-    m_fringeShader.link();
-    m_fringeShader.uniform("texture", 0);
-
+    CPVRTString* pErrorStr;
+        
+    if(PVRTShaderLoadFromFile(c_szVertShaderBinFile, c_szVertShaderSrcFile, GL_VERTEX_SHADER, GL_SGX_BINARY_IMG, &m_textureVertShader, pErrorStr) != PVR_SUCCESS)
+    {                                                                           
+        return false;                                                           
+    }                                                                           
+                                                                                    
+    if (PVRTShaderLoadFromFile(c_szFragShaderBinFile, c_szFragShaderSrcFile, GL_FRAGMENT_SHADER, GL_SGX_BINARY_IMG, &m_textureFragShader, pErrorStr) != PVR_SUCCESS)
+    {                                                                           
+        return false;                                                           
+    }     
+    
+    const char* aszAttribs[] = { "vertVertex", "vertTexCoord" };
+                                                                                    
+    if(PVRTCreateProgram(&m_textureShader, m_textureVertShader, m_textureFragShader, aszAttribs, 2, pErrorStr) != PVR_SUCCESS)
+    {                                                                           
+       return false;                                                           
+    }                                                                           
+    // Set the sampler2D variable to the first texture unit                     
+    glUniform1i(glGetUniformLocation(m_textureShader, "Texture"), 0);
+            
 	/////////////////////////////////////////////////
 	// Cache our fullscreen quad
 	/////////////////////////////////////////////////
@@ -85,7 +150,7 @@ bool FringeDisplay::ReleaseView()
 	/////////////////////////////////////////////////
 	glDeleteBuffers(1, &m_fringeVBO);
 	glDeleteTextures(1, &m_fringeTexture);
-    //TODO - Release Shader? 
+    
 
 	return !_checkGLErrors();
 }
@@ -99,7 +164,7 @@ bool FringeDisplay::RenderScene()
 	// Draw our full screen quad
 	/////////////////////////////////////////////////
 	// Bind our shader
-    m_fringeShader.bind();	
+    glUseProgram(m_textureShader);	
 		
 	// Enable and bind our fringe texture
 	glActiveTexture(GL_TEXTURE0);
@@ -116,7 +181,7 @@ bool FringeDisplay::RenderScene()
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisableVertexAttribArray(m_vertLoc);
 	glDisableVertexAttribArray(m_texLoc);
-	m_fringeShader.unbind();
+	glUseProgram(0);
 
     // Make sure we dont have errors.
 	// By returning true, we signify to PVR that all
@@ -142,4 +207,16 @@ bool FringeDisplay::_checkGLErrors()
     }
 
     return false;
+}
+
+/*!**************************************************************************** 
+ *  @Function      NewDemo                                                         
+ *   @Return        PVRShell*       The demo supplied by the user                   
+ *    @Description   This function must be implemented by the user of the shell.     
+ *                    The user should return its PVRShell object defining the         
+ *                                    behaviour of the application.                                     
+ ******************************************************************************/ 
+PVRShell* NewDemo()                                                             
+{                                                                               
+    return new FringeDisplay();                                               
 }

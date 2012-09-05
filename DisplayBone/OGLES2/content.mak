@@ -66,19 +66,19 @@ $(CONTENTDIR):
 skyline.pvr: $(MEDIAPATH)/skyline.png
 	$(PVRTEXTOOL) -m -fOGLPVRTC4 -i$(MEDIAPATH)/skyline.png -o$@
 
-$(CONTENTDIR)/TextureDisplayVertShader.cpp: TextureDisplay.vsh TextureDisplay.vsc
-	$(FILEWRAP)  -s  -o $@ TextureDisplay.vsh
-	-$(FILEWRAP)  -oa $@ TextureDisplay.vsc
+$(CONTENTDIR)/TextureDisplayVertShader.cpp: Shaders/TextureDisplay.vsh Shaders/TextureDisplay.vsc
+	$(FILEWRAP)  -s  -o $@ Shaders/TextureDisplay.vsh
+	-$(FILEWRAP)  -oa $@ Shaders/TextureDisplay.vsc
 
-$(CONTENTDIR)/TextureDisplayFragShader.cpp: TextureDisplay.fsh TextureDisplay.fsc
-	$(FILEWRAP)  -s  -o $@ TextureDisplay.fsh
-	-$(FILEWRAP)  -oa $@ TextureDisplay.fsc
+$(CONTENTDIR)/TextureDisplayFragShader.cpp: Shaders/TextureDisplay.fsh Shaders/TextureDisplay.fsc
+	$(FILEWRAP)  -s  -o $@ Shaders/TextureDisplay.fsh
+	-$(FILEWRAP)  -oa $@ Shaders/TextureDisplay.fsc
 
-TextureDisplay.vsc: TextureDisplay.vsh
-	$(PVRUNISCO) TextureDisplay.vsh $@  -v 
+Shaders/TextureDisplay.vsc: Shaders/TextureDisplay.vsh
+	$(PVRUNISCO) Shaders/TextureDisplay.vsh $@  -v 
 
-TextureDisplay.fsc: TextureDisplay.fsh
-	$(PVRUNISCO) TextureDisplay.fsh $@  -f 
+Shaders/TextureDisplay.fsc: Shaders/TextureDisplay.fsh
+	$(PVRUNISCO) Shaders/TextureDisplay.fsh $@  -f 
 
 ############################################################################
 # End of file (content.mak)

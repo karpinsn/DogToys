@@ -2,7 +2,7 @@
 #define _PNG_LOADER_H_
 
 #include "PVRShell.h"
-#include "OGLES2/OGLES2Tools.h" 
+#include "OGLES2Tools.h" 
 
 //#include <GL/gl.h>
 //#include <GL/glu.h>

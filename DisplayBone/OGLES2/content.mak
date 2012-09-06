@@ -33,8 +33,8 @@ CONTENTDIR = Content
 ## Instructions
 #############################################################################
 
-TEXTURES = \
-	skyline.pvr
+TEXTURES = 
+	
 
 BIN_SHADERS = \
 	Shaders/TextureDisplay.vsc \
@@ -62,9 +62,6 @@ binary_shaders:	$(BIN_SHADERS)
 
 $(CONTENTDIR):
 	-mkdir $@
-
-skyline.pvr: $(MEDIAPATH)/skyline.png
-	$(PVRTEXTOOL) -m -fOGLPVRTC4 -i$(MEDIAPATH)/skyline.png -o$@
 
 $(CONTENTDIR)/TextureDisplayVertShader.cpp: Shaders/TextureDisplay.vsh Shaders/TextureDisplay.vsc
 	$(FILEWRAP)  -s  -o $@ Shaders/TextureDisplay.vsh

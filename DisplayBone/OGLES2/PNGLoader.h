@@ -29,6 +29,8 @@ class PNGLoader
 		*                                     should be validated by the client of this function.
 		*/
 		static GLuint loadTexture(const string filename, int &width, int &height);
+    private:
+        static void _trace(string message);
 };
 
 #endif // _PNG_LOADER_H_

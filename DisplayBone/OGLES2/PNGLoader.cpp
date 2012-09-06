@@ -5,18 +5,22 @@ GLuint PNGLoader::loadTexture(const string filename, int &width, int &height)
     //header for testing if it is a png
     png_byte header[8];
 
+    _trace("Opening image file");
     //open file as binary
     FILE *fp = fopen(filename.c_str(), "rb");
-    if (!fp) {
+    if (!fp) 
+    {
+        _trace("Unable to open image file");
         return TEXTURE_LOAD_ERROR;
     }
 
-    //read the header
+    _trace("Reading the image header");
+    //read the header and test if its a PNG
     fread(header, 1, 8, fp);
-
-    //test if png
     int is_png = !png_sig_cmp(header, 0, 8);
-    if (!is_png) {
+    if (!is_png) 
+    {
+        _trace("Image is not a PNG image");
         fclose(fp);
         return TEXTURE_LOAD_ERROR;
     }
@@ -79,6 +83,9 @@ GLuint PNGLoader::loadTexture(const string filename, int &width, int &height)
     // Row size in bytes.
     int rowbytes = png_get_rowbytes(png_ptr, info_ptr);
 
+    // glTexImage2d requires rows to be 4-byte aligned
+    rowbytes += 3 - ((rowbytes-1) % 4);
+ 
     // Allocate the image_data as a big block, to be given to opengl
     png_byte *image_data = new png_byte[rowbytes * height];
     if (!image_data) {
@@ -104,13 +111,22 @@ GLuint PNGLoader::loadTexture(const string filename, int &width, int &height)
     //read the png into image_data through row_pointers
     png_read_image(png_ptr, row_pointers);
 
+    _trace("Generating an OpenGL texture from the image");
     //Now generate the OpenGL texture object
     GLuint texture;
     glGenTextures(1, &texture);
+    
+    _trace("Binding Texture");
     glBindTexture(GL_TEXTURE_2D, texture);
-    glTexImage2D(GL_TEXTURE_2D,0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*) image_data);
+
+    _trace("Transfering Image data");
+    //glTexImage2D(GL_TEXTURE_2D,0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*) image_data); 
+    glTexImage2D(GL_TEXTURE_2D,0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*) image_data);
+    
+    _trace("Building Texture");
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
+    _trace("Clearing memory");
     //clean up memory and close stuff
     png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
     delete[] image_data;
@@ -118,4 +134,10 @@ GLuint PNGLoader::loadTexture(const string filename, int &width, int &height)
     fclose(fp);
 
     return texture;
+}
+
+void PNGLoader::_trace(string message)
+{
+    printf(message.c_str());
+    printf("\n");
 }

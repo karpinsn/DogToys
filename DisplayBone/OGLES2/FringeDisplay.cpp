@@ -4,8 +4,6 @@
 
 // Helper classes
 #include "PNGLoader.h"
-#include "ShaderProgram.h"
-#include "Shader.h"
 
 // Needed for OpenGLES 2.0 stuff
 #include "PVRShell.h"
@@ -43,6 +41,7 @@ class FringeDisplay : public PVRShell
 		virtual bool RenderScene();
 
     private:
+        void _trace(string message);
         bool _checkGLErrors();
 };
 
@@ -65,6 +64,8 @@ const char c_szVertShaderBinFile[]  = "TextureDisplay.vsc";
 // Called once per application run
 bool FringeDisplay::InitApplication()
 {
+    _trace("Enter: FringeDisplay.InitApplication()");
+
     fullscreenQuad[0].position[0] = -1.0f; fullscreenQuad[0].position[1] = -1.0f; fullscreenQuad[0].position[2] = 0.0f;
     fullscreenQuad[1].position[0] =  1.0f; fullscreenQuad[1].position[1] = -1.0f; fullscreenQuad[1].position[2] = 0.0f;
 	fullscreenQuad[2].position[0] =  1.0f; fullscreenQuad[2].position[1] =  1.0f; fullscreenQuad[2].position[2] = 0.0f;
@@ -75,46 +76,68 @@ bool FringeDisplay::InitApplication()
 	fullscreenQuad[2].tex[0] = 1.0f; fullscreenQuad[2].tex[1] = 1.0f;
 	fullscreenQuad[3].tex[0] = 0.0f; fullscreenQuad[3].tex[1] = 1.0f;
 
+    // Get and set the read path for content files                              
+    CPVRTResourceFile::SetReadPath((char*)PVRShellGet(prefReadPath));           
+                                                                                         
+    // Get and set the load/release functions for loading external files.       
+    // In the majority of cases the PVRShell will return NULL function pointers implying that
+    // nothing special is required to load external files.                      
+    CPVRTResourceFile::SetLoadReleaseFunctions(PVRShellGet(prefLoadFileFunc), PVRShellGet(prefReleaseFileFunc));
+
+    _trace("Exit: FringeDisplay.InitApplication()");
 	return !_checkGLErrors();
 }
 
 // Called when there is a change to the rendering context
 bool FringeDisplay::InitView()
 {
-	// Basic OpenGL setup
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    _trace("Enter: FringeDisplay.InitView()");
 	
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_TEXTURE_2D);
+    _trace("Initializing OpenGL");
+    // Basic OpenGL setup
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	    
+    //  If we have OpenGL errors stop and notify of problems
+    if(_checkGLErrors())
+        return false;
 
 	/////////////////////////////////////////////////
 	// Need to load our shaders
 	///////////////////////////////////////////////// 
-    CPVRTString* pErrorStr;
+    _trace("Loading Shaders");
+    CPVRTString pErrorStr;
         
-    if(PVRTShaderLoadFromFile(c_szVertShaderBinFile, c_szVertShaderSrcFile, GL_VERTEX_SHADER, GL_SGX_BINARY_IMG, &m_textureVertShader, pErrorStr) != PVR_SUCCESS)
-    {                                                                           
+    if(PVRTShaderLoadFromFile(c_szVertShaderBinFile, c_szVertShaderSrcFile, GL_VERTEX_SHADER, GL_SGX_BINARY_IMG, &m_textureVertShader, &pErrorStr) != PVR_SUCCESS)
+    {
+        _trace("Could not load TextureDisplay vertex shader");        
         return false;                                                           
     }                                                                           
                                                                                     
-    if (PVRTShaderLoadFromFile(c_szFragShaderBinFile, c_szFragShaderSrcFile, GL_FRAGMENT_SHADER, GL_SGX_BINARY_IMG, &m_textureFragShader, pErrorStr) != PVR_SUCCESS)
-    {                                                                           
+    if (PVRTShaderLoadFromFile(c_szFragShaderBinFile, c_szFragShaderSrcFile, GL_FRAGMENT_SHADER, GL_SGX_BINARY_IMG, &m_textureFragShader, &pErrorStr) != PVR_SUCCESS)
+    {   
+        _trace("Could not load TextureDisplay fragment shader");        
         return false;                                                           
     }     
     
-    const char* aszAttribs[] = { "vertVertex", "vertTexCoord" };
-                                                                                    
-    if(PVRTCreateProgram(&m_textureShader, m_textureVertShader, m_textureFragShader, aszAttribs, 2, pErrorStr) != PVR_SUCCESS)
-    {                                                                           
-       return false;                                                           
+    _trace("Linking Shaders");
+    const char* aszAttribs[] = { "vertVertex", "vertTexCoord" };                                                                                
+    if(PVRTCreateProgram(&m_textureShader, m_textureVertShader, m_textureFragShader, aszAttribs, 2, &pErrorStr) != PVR_SUCCESS)
+    {  
+        _trace("Could not link shaders");       
+        return false;                                                           
     }                                                                           
     // Set the sampler2D variable to the first texture unit                     
     glUniform1i(glGetUniformLocation(m_textureShader, "Texture"), 0);
-            
+     
+    //  If we have OpenGL errors stop and notify of problems
+    if(_checkGLErrors())
+        return false;
+       
 	/////////////////////////////////////////////////
 	// Cache our fullscreen quad
 	/////////////////////////////////////////////////
-	// Cache the geometry (held in fullscreenQuad)
+	_trace("Caching fullscreen quad");
+    // Cache the geometry (held in fullscreenQuad)
 	glGenBuffers(1, &m_fringeVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, m_fringeVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(fullscreenQuad), &fullscreenQuad[0], GL_STATIC_DRAW);
@@ -130,13 +153,17 @@ bool FringeDisplay::InitView()
 	/////////////////////////////////////////////////
 	// Load the fringe image
 	/////////////////////////////////////////////////
+    _trace("Loading fringe images");
     int width;
     int height;
 	m_fringeTexture = PNGLoader::loadTexture("fringe.png", width, height);
     //  Make sure we didn't have any errors loading the fringe
     if(TEXTURE_LOAD_ERROR == m_fringeTexture) 
+    {
+        _trace("Unable to load fringe image");
         return false;
-
+    }
+    _trace("Exit: FringeDisplay.InitView()");
     //  If we dont have any errors then we have sucessfully initialized
 	return !_checkGLErrors();
 }
@@ -145,13 +172,14 @@ bool FringeDisplay::InitView()
 // or before the application quits
 bool FringeDisplay::ReleaseView()
 {
+    _trace("Enter: FringeDisplay.ReleaseView()");
 	/////////////////////////////////////////////////
 	// Release our VBO, Texture, and Shader
 	/////////////////////////////////////////////////
 	glDeleteBuffers(1, &m_fringeVBO);
 	glDeleteTextures(1, &m_fringeTexture);
     
-
+    _trace("Exit: FringeDisplay.ReleaseView()");
 	return !_checkGLErrors();
 }
 
@@ -191,8 +219,16 @@ bool FringeDisplay::RenderScene()
 
 bool FringeDisplay::QuitApplication()
 {
+    _trace("Enter: FringeDisplay.QuitApplication()");
+    _trace("Exit: FringeDisplay.QuitApplication()");
 	// Not much to do...
 	return !_checkGLErrors();
+}
+
+void FringeDisplay::_trace(string message)
+{
+    printf(message.c_str());
+    printf("\n");
 }
 
 bool FringeDisplay::_checkGLErrors()
@@ -201,7 +237,7 @@ bool FringeDisplay::_checkGLErrors()
     if(GL_NO_ERROR != glError)
     {
         //  TODO- Comeback and find the PowerVR equalivalent of gluErrorString
-        printf("OpenGL Error:\n"); 
+        printf("OpenGL Error: %d\n", glError); 
         //printf("OpenGL Error: %s\n", gluErrorString(glError));
         return true;
     }

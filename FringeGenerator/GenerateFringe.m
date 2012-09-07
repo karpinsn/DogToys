@@ -1,5 +1,7 @@
+% PVR Requires square power of 2 textures
 width = 1024;
-height = 768;
+%height = 768;
+height = 1024;
 
 x = linspace(0.0, 1.0, width);
 fringeImage = zeros(height, width, 3);
